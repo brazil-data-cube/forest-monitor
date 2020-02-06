@@ -7,7 +7,7 @@ Flask-RESTful==0.3.6
 Flask-Script==2.0.6
 pytz==2017.3
 six==1.11.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 coverage==4.4.2
 requests==2.20.0
 workalendar==2.3.1
