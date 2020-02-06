@@ -43,14 +43,9 @@ class FeatureBusiness:
                         SELECT ST_Union(mask.geom) AS geom
                         FROM mascara_prodes AS mask, converted_geom
                         WHERE ST_Intersects(mask.geom, converted_geom.geom)
-                    ), result_area_total AS (
-                        SELECT ST_Union(area.geom) AS geom
-                        FROM areas_interesse AS area, converted_geom
-                        WHERE ST_Intersects(area.geom, converted_geom.geom)
                     ), result_collect AS (
                         SELECT  ST_Union(
                                     ARRAY[
-                                        area.geom,
                                         mask.geom,
                                         deter.geom
                                     ]
