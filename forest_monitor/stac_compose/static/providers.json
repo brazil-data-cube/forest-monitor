@@ -1,0 +1,10 @@
+{
+  "DEVELOPMENT_SEED_STAC": {
+    "url": "https://sat-api.developmentseed.org",
+    "type":"stac"
+  },
+  "KEPLER_STAC": {
+    "url": "https://stac.amskepler.com/v07",
+    "type":"stac"
+  }
+}

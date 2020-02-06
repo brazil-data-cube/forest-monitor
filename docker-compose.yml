@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  forest-backend:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: forest-backend
+    environment:
+      - PORT=5000
+      - KEYSYSTEM=CHANGE_ME
+      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:postgres@localhost/test
+      - CLIENT_SECRET_KEY="CHANGE_ME"
+      - CLIENT_AUDIENCE="CHANGE_ME"
+    ports:
+      - "5016:5000"
+    restart: unless-stopped

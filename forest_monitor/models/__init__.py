@@ -1,0 +1,1 @@
+from forest_monitor.models.base_sql import db, BaseModel
