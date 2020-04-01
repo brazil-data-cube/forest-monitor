@@ -38,7 +38,7 @@ class FeatureBusiness:
                     ), result_deter_intersection AS (
                         SELECT ST_Union(deter.geom) AS geom
                         FROM deter, converted_geom
-                        WHERE ST_Intersects(deter.geom, converted_geom.geom)
+                        WHERE ST_Intersects(deter.geom, converted_geom.geom) AND deter.source <> 'S' 
                     ), result_mask_intersection AS (
                         SELECT ST_Union(mask.geom) AS geom
                         FROM mascara_prodes AS mask, converted_geom
