@@ -38,11 +38,11 @@ class FeatureBusiness:
                     ), result_deter_d_intersection AS (
                         SELECT ST_Union(deter_d.geom) AS geom
                         FROM deter_d, converted_geom
-                        WHERE ST_Intersects(deter_d.geom, converted_geom.geom)
+                        WHERE ST_Intersects(deter_d.geom, converted_geom.geom) AND deter_d.source <> 'S' 
                     ), result_deter_m_intersection AS (
                         SELECT ST_Union(deter_m.geom) AS geom
                         FROM deter_m, converted_geom
-                        WHERE ST_Intersects(deter_m.geom, converted_geom.geom)
+                        WHERE ST_Intersects(deter_m.geom, converted_geom.geom) AND deter_m.source <> 'S' 
                     ), result_mask_intersection AS (
                         SELECT ST_Union(mask.geom) AS geom
                         FROM mascara_prodes AS mask, converted_geom
