@@ -4,8 +4,8 @@ from sqlalchemy import BigInteger, Column, Date, DateTime, Integer, Numeric, Str
 from forest_monitor.models import BaseModel
 
 
-class DeterM(BaseModel):
-    __tablename__ = 'deter_m'
+class Deter(BaseModel):
+    __tablename__ = 'deter'
 
     id = Column(Integer, primary_key=True)
     geom = Geometry(geometry_type='MULTIPOLYGON', srid=4326, spatial_index=True)
@@ -31,8 +31,8 @@ class DeterM(BaseModel):
                        onupdate=datetime.date.today())
     image_date = Column(Date)
 
-class DeterD(BaseModel):
-    __tablename__ = 'deter_d'
+class MascaraDeter(BaseModel):
+    __tablename__ = 'mascara_deter'
 
     id = Column(Integer, primary_key=True)
     geom = Geometry(geometry_type='MULTIPOLYGON', srid=4326, spatial_index=True)
