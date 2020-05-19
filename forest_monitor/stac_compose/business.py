@@ -67,8 +67,19 @@ class StacComposeBusiness():
         response = StacComposeServices.search_items(url, collection.upper(), query)
         if not response:
             return []
-        return response['features'] if response.get('features') else [response]
+        #retornar somente parametros L4    
+        features = response['features'] if response.get('features') else [response] 
+        listL4 = []
+        padrao = "L4"
+        for i in features:
 
+            if padrao in i['id']:
+                #print(i['id'])
+                listL4.append(i)
+     
+        return listL4
+        
+       
 
     @classmethod
     def search(cls, collections, bbox, cloud_cover=False, time=False, limit=100):
