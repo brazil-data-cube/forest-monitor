@@ -73,7 +73,7 @@ class StacComposeBusiness():
         padrao = "L4"
         for i in features:
 
-            if padrao in i['id']:
+            if i.get('id') and padrao in i['id']:
                 #print(i['id'])
                 listL4.append(i)
      
