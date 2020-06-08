@@ -4,8 +4,8 @@ from sqlalchemy import text
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import NotFound
 from forest_monitor.models.base_sql import db
-from forest_monitor.models.deter import Deter
-from forest_monitor.models.deter import MascaraDeter
+from forest_monitor.models.destination_table import DestinationTable
+from forest_monitor.config import getCurrentConfig
 
 
 class FeatureBusiness:
@@ -19,6 +19,13 @@ class FeatureBusiness:
             user_id (str or None): User identifier
 
         """
+
+        appConfig = getCurrentConfig()
+
+        destinationTable = appConfig.DESTINATION_TABLE
+        maskTableDeter = appConfig.MASK_TABLE_DETER
+        maskTableProdes = appConfig.MASK_TABLE_PRODES
+
         values['scene_id'] = values.get('scene_id', '')
         values['user_id'] = user_id
         values['source'] = 'M'
@@ -28,6 +35,8 @@ class FeatureBusiness:
             'coordinates': [],
             'type': values['geom']['features'][0]['geometry']['type']
         }
+
+
         for coord in values['geom']['features'][0]['geometry']['coordinates']:
             with db.session.begin_nested():
                 geom = feature
@@ -36,34 +45,34 @@ class FeatureBusiness:
                 statement = text('''
                     WITH converted_geom as (
                         SELECT ST_setSRID(ST_GeomFromGeoJson(:geom), 4326) AS geom
-                    ), result_mascara_deter_intersection AS (
-                        SELECT ST_Union(mascara_deter.geom) AS geom
-                        FROM mascara_deter, converted_geom
-                        WHERE ST_Intersects(mascara_deter.geom, converted_geom.geom) AND mascara_deter.source <> 'S' 
-                    ), result_deter_intersection AS (
-                        SELECT ST_Union(deter.geom) AS geom
-                        FROM deter, converted_geom
-                        WHERE ST_Intersects(deter.geom, converted_geom.geom) AND deter.source <> 'S' 
+                    ), result_''' + maskTableDeter + '''_intersection AS (
+                        SELECT ST_Union(''' + maskTableDeter + '''.geom) AS geom
+                        FROM ''' + maskTableDeter + ''', converted_geom
+                        WHERE ST_Intersects(''' + maskTableDeter + '''.geom, converted_geom.geom) AND ''' + maskTableDeter + '''.source <> 'S' 
+                    ), result_''' + destinationTable + '''_intersection AS (
+                        SELECT ST_Union(''' + destinationTable + '''.geom) AS geom
+                        FROM ''' + destinationTable + ''', converted_geom
+                        WHERE ST_Intersects(''' + destinationTable + '''.geom, converted_geom.geom) AND ''' + destinationTable + '''.source <> 'S' 
                     ), result_mask_intersection AS (
                         SELECT ST_Union(mask.geom) AS geom
-                        FROM mascara_prodes AS mask, converted_geom
+                        FROM ''' + maskTableProdes + ''' AS mask, converted_geom
                         WHERE ST_Intersects(mask.geom, converted_geom.geom)
                     ), result_collect AS (
                         SELECT  ST_Union(
                                     ARRAY[
                                         mask.geom,
-                                        mascara_deter.geom,
-                                        deter.geom
+                                        ''' + maskTableDeter + '''.geom,
+                                        ''' + destinationTable + '''.geom
                                     ]
                                 ) AS geom
                         FROM result_mask_intersection AS mask,
-                            result_mascara_deter_intersection AS mascara_deter,
-                            result_deter_intersection AS deter
+                            result_''' + maskTableDeter + '''_intersection AS ''' + maskTableDeter + ''',
+                            result_''' + destinationTable + '''_intersection AS ''' + destinationTable + '''
                     ), result AS (
                         SELECT ST_Difference(converted_geom.geom, coalesce(r.geom, ST_SetSRID('GEOMETRYCOLLECTION EMPTY'::geometry, 4326))) AS geom
                         FROM converted_geom, result_collect r
                     )
-                    INSERT INTO deter (classname, quadrant, path_row, view_date, sensor,
+                    INSERT INTO ''' + destinationTable + ''' (classname, quadrant, path_row, view_date, sensor,
                                     satellite, areauckm, uc, areamunkm, municipali,
                                     uf, geom, scene_id, source, user_id, created_at, image_date)
                         SELECT :classname AS classname, :quadrant AS quadrant,
@@ -83,7 +92,7 @@ class FeatureBusiness:
     def delete(cls, feature_id):
         with db.session.begin_nested():
             try:
-                feature = db.session.query(Deter).filter_by(id=feature_id, source='M').one()
+                feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
 
                 db.session.delete(feature)
             except NoResultFound:

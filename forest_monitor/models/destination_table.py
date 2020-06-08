@@ -2,10 +2,15 @@ import datetime
 from geoalchemy2 import Geometry
 from sqlalchemy import BigInteger, Column, Date, DateTime, Integer, Numeric, String, Text
 from forest_monitor.models import BaseModel
+from forest_monitor.config import getCurrentConfig
 
+appConfig = getCurrentConfig()
 
-class Deter(BaseModel):
-    __tablename__ = 'deter'
+destinationTable = appConfig.DESTINATION_TABLE
+maskTable = appConfig.MASK_TABLE_DETER
+
+class DestinationTable(BaseModel):
+    __tablename__ = destinationTable
 
     id = Column(Integer, primary_key=True)
     geom = Geometry(geometry_type='MULTIPOLYGON', srid=4326, spatial_index=True)
@@ -31,9 +36,8 @@ class Deter(BaseModel):
                        onupdate=datetime.date.today())
     image_date = Column(Date)
 
-class MascaraDeter(BaseModel):
-    __tablename__ = 'mascara_deter'
-
+class MaskTable(BaseModel):
+    __tablename__ = maskTable
     id = Column(Integer, primary_key=True)
     geom = Geometry(geometry_type='MULTIPOLYGON', srid=4326, spatial_index=True)
     classname = Column(String(254))
