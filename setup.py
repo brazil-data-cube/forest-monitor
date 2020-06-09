@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='Forest-Monitor',
-    version='0.0.1',
+    version="1.1.0",
     description='Forest Monitor Package',
     author='Admin',
     author_email='admin@admin.com',

@@ -1,12 +1,8 @@
-FROM brazildatacube/base:0.1
-
-RUN apt-get update && apt-get install -y build-essential libpq-dev
+FROM forestmonitor/forest-monitor-backend-base:1.0
 
 ADD . /forest-monitor
 
 WORKDIR /forest-monitor
-
-RUN pip3 install -r requirements.txt
 
 VOLUME /data
 

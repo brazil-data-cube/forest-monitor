@@ -12,6 +12,9 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:postgres@localhost/test
       - CLIENT_SECRET_KEY="CHANGE_ME"
       - CLIENT_AUDIENCE="CHANGE_ME"
+      - MASK_TABLE_DETER="mascara_deter",
+      - MASK_TABLE_PRODES="mascara_prodes",
+      - DESTINATION_TABLE="deter"
     ports:
       - "5016:5000"
     restart: unless-stopped
