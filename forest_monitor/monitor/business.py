@@ -74,13 +74,13 @@ class FeatureBusiness:
                     )
                     INSERT INTO ''' + destinationTable + ''' (classname, quadrant, path_row, view_date, sensor,
                                     satellite, areauckm, uc, areamunkm, municipali,
-                                    uf, geom, scene_id, source, user_id, created_at, image_date)
+                                    uf, geom, scene_id, source, user_id, created_at, image_date, project)
                         SELECT :classname AS classname, :quadrant AS quadrant,
                                 :path_row AS path_row, :view_date AS view_date, :sensor AS sensor,
                                 :satellite AS satellite, :areauckm AS areauckm,
                                 :uc AS uc, :areamunkm AS areamunkm, :municipali AS municipali,
                                 :uf AS uf, ST_Multi(geom), :scene_id AS scene_id, :source AS source,
-                                :user_id AS user_id, :created_at as created_at, :image_date AS image_date
+                                :user_id AS user_id, :created_at as created_at, :image_date AS image_date, :project AS project
                         FROM result
                 ''')
 
