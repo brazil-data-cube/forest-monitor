@@ -30,7 +30,7 @@ class DestinationTable(BaseModel):
     source = Column(String(2))
     user_id = Column(String(254))
     ncar_ids = Column(Integer)
-    car_imovel_id = Column(Text(2048))
+    car_imovel = Column(Text(2048))
     created_at = Column(Date,
                        default=datetime.date.today(),
                        onupdate=datetime.date.today())
@@ -56,7 +56,7 @@ class MaskTable(BaseModel):
     source = Column(String(2))
     user_id = Column(String(254))
     ncar_ids = Column(Integer)
-    car_imovel_id = Column(Text(2048))
+    car_imovel = Column(Text(2048))
     created_at = Column(Date,
                        default=datetime.date.today(),
                        onupdate=datetime.date.today())
