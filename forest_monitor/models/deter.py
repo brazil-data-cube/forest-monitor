@@ -31,6 +31,17 @@ class Deter(BaseModel):
                        onupdate=datetime.date.today())
     image_date = Column(Date)
 
+    continuo = Column(Integer)
+    velocidade  = Column(Numeric)
+    porc_agreg = Column(Integer)
+    deltad = Column(Integer)
+    car_duplo = Column(Integer)
+    project = Column(Text)
+
+
+
+
+
 class MascaraDeter(BaseModel):
     __tablename__ = 'mascara_deter'
 
