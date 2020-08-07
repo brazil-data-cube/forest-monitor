@@ -79,14 +79,46 @@ class FeatureBusiness:
                 db.session.execute(statement, params=values)
             db.session.commit()
 
+    
+    @classmethod
+    def get(cls,feature_id):
+        with db.session.begin_nested():
+            print("This is a Python baack.")
+            try:
+                feature = db.session.query(Deter).filter_by(id=feature_id, source='M').one()
+                db.session.get(feature)
+            except NoResultFound:
+                raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
+
+        db.session.commit()
+
+    @classmethod
+    def put(cls,feature_id):
+        with db.session.begin_nested():
+            print(" passou aqui.")
+            try:
+                feature = db.session.query(Deter).filter_by(id=feature_id, source='M').one()
+                db.session.put(feature)
+            except NoResultFound:
+                raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
+
+        db.session.commit()
+
+
+
     @classmethod
     def delete(cls, feature_id):
         with db.session.begin_nested():
+             
             try:
                 feature = db.session.query(Deter).filter_by(id=feature_id, source='M').one()
-
+                print(feature)
                 db.session.delete(feature)
+
+                print("This is a Python program aquiiii.") 
             except NoResultFound:
                 raise NotFound('Feature "{}" not found or cannot be removed.'.format(feature_id))
 
         db.session.commit()
+
+  

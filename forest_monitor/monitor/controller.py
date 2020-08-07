@@ -10,8 +10,6 @@ from forest_monitor.config import APPNAME
 
 api = ns
 
-
-
 @api.route('/')
 class FeatureCreationController(APIResource):
     @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
@@ -25,8 +23,28 @@ class FeatureCreationController(APIResource):
 
 @api.route('/<string:feature_id>')
 class FeatureController(APIResource):
+    @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
+    def get(self, feature_id):
+        FeatureBusiness.get(feature_id)
+        
+        return {"status": 200}, 200
+
+@api.route('/update/<string:feature_id>')
+class FeatureController(APIResource):
+    @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
+    def get(self, feature_id):
+        FeatureBusiness.put(feature_id)
+        
+        return {"status": 200}, 200
+
+
+
+
+@api.route('/<string:feature_id>')
+class FeatureController(APIResource):
     @require_oauth_scopes(scope="{}:manage:DELETE".format(APPNAME))
     def delete(self, feature_id):
         FeatureBusiness.delete(feature_id)
 
         return {"status": 204}, 204
+

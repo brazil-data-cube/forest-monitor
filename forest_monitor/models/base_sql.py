@@ -38,13 +38,40 @@ class DBO():
         except Exception as e:
             db.session.rollback()
             raise e
+    
+   
 
     def delete(self):
+        
         """
         Delete object from database.
         """
         try:
             db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+    
+    def get(self):
+        
+        """
+        Delete object from database.
+        """
+        try:
+            db.session.get(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+    
+    def put(self,data):
+        
+        """
+        Delete object from database.
+        """
+        try:
+            db.session.put(self,data)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -64,4 +91,8 @@ class BaseModel(db.Model, DBO):
 
     def update(self, data):
         for key, value in data.items():
+            print(key)
             setattr(self, key, value)
+
+
+            
