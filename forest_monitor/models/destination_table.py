@@ -36,25 +36,8 @@ class DestinationTable(BaseModel):
                        onupdate=datetime.date.today())
     image_date = Column(Date)
 
-<<<<<<< HEAD:forest_monitor/models/deter.py
-    continuo = Column(Integer)
-    velocidade  = Column(Numeric)
-    porc_agreg = Column(Integer)
-    deltad = Column(Integer)
-    car_duplo = Column(Integer)
-    project = Column(Text)
-
-
-
-
-
-class MascaraDeter(BaseModel):
-    __tablename__ = 'mascara_deter'
-
-=======
 class MaskTable(BaseModel):
     __tablename__ = maskTable
->>>>>>> 2753d3cb6d46a4d211dd82aac9555a887100ee13:forest_monitor/models/destination_table.py
     id = Column(Integer, primary_key=True)
     geom = Geometry(geometry_type='MULTIPOLYGON', srid=4326, spatial_index=True)
     classname = Column(String(254))
