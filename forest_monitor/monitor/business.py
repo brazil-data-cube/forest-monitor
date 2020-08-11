@@ -94,24 +94,30 @@ class FeatureBusiness:
         with db.session.begin_nested():
             try:
                 feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
-                db.session.get(feature)
+                
+                return feature
             except NoResultFound:
                 raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
 
         db.session.commit()
 
     @classmethod
-    def put(cls,feature_id):
+    def update(cls, values, feature_id):
         with db.session.begin_nested():
                try:
 
                 feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
-                db.session.put(feature)
+                feature.classname=values["classname"]
+                feature.view_date=values["view_date"]
+                feature.path_row=values["path_row"]
+                feature.satellite=values["satellite"]
+                feature.sensor=values["sensor"]
+                feature.scene_id=values["scene_id"]
+                feature.image_date=values["image_date"]
+
                except NoResultFound:
                 raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
-
-        db.session.commit()
-            
+        db.session.commit()              
 
     @classmethod
     def delete(cls, feature_id):

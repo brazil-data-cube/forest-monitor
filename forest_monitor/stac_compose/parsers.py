@@ -1,5 +1,6 @@
 from cerberus import Validator
 from datetime import datetime
+from json import JSONEncoder
 
 
 def validate_date(s):
@@ -43,3 +44,7 @@ def validate(data, type_schema):
     if not v.validate(data):
         return v.errors, False
     return data, True
+
+class JSONEnc(JSONEncoder):
+        def default(self, o):
+            return o._asdict()    

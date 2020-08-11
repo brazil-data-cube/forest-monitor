@@ -7,10 +7,13 @@ from forest_monitor.monitor import ns
 from forest_monitor.monitor.business import FeatureBusiness
 from bdc_core.decorators.auth import require_oauth_scopes
 from forest_monitor.config import APPNAME
+from flask import jsonify
+from forest_monitor.stac_compose.parsers import JSONEnc
+
 
 api = ns
 
-@api.route('/')
+@api.route('/add')
 class FeatureCreationController(APIResource):
     @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
     def post(self):
@@ -21,27 +24,27 @@ class FeatureCreationController(APIResource):
 
         return {"status": 201}, 201
 
-@api.route('/<string:feature_id>')
-class FeatureController(APIResource):
+@api.route('/get/<string:feature_id>')
+class FeatureGetController(APIResource):
     @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
     def get(self, feature_id):
-        FeatureBusiness.get(feature_id)
+        destinationTable = FeatureBusiness.get(feature_id)
+        feature = destinationTable.getFeature()
+        response = json.dumps(feature, indent=2)
         
-        return {"status": 200}, 200
+        return response
 
 @api.route('/update/<string:feature_id>')
-class FeatureController(APIResource):
+class FeatureUpdateController(APIResource):
     @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
-    def get(self, feature_id):
-        FeatureBusiness.put(feature_id)
+    def post(self, feature_id):
+        FeatureBusiness.update(request.get_json(), feature_id)
         
         return {"status": 200}, 200
 
 
-
-
-@api.route('/<string:feature_id>')
-class FeatureController(APIResource):
+@api.route('/delete/<string:feature_id>')
+class FeatureDeleteController(APIResource):
     @require_oauth_scopes(scope="{}:manage:DELETE".format(APPNAME))
     def delete(self, feature_id):
         FeatureBusiness.delete(feature_id)

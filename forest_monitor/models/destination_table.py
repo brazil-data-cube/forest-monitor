@@ -3,6 +3,8 @@ from geoalchemy2 import Geometry
 from sqlalchemy import BigInteger, Column, Date, DateTime, Integer, Numeric, String, Text
 from forest_monitor.models import BaseModel
 from forest_monitor.config import getCurrentConfig
+import json
+from geoalchemy2 import functions
 
 appConfig = getCurrentConfig()
 
@@ -35,6 +37,31 @@ class DestinationTable(BaseModel):
                        default=datetime.date.today(),
                        onupdate=datetime.date.today())
     image_date = Column(Date)
+    def getFeature(self):
+        feature = {
+            "tablename": self.__tablename__,
+            "id": self.id,
+            "classname": self.classname,
+            "quadrant": self.quadrant,
+            "path_row": self.path_row,
+            "view_date": self.view_date.strftime("%m/%d/%Y, %H:%M:%S"),
+            "sensor": self.sensor,
+            "satellite": self.satellite,
+            "areauckm": str(self.areauckm),
+            "uc": self.uc,
+            "areamunkm": str(self.areamunkm),
+            "municipali": self.municipali,
+            "uf": self.uf,
+            "scene_id": self.scene_id,
+            "source": self.source,
+            "user_id": self.user_id,
+            "ncar_ids": self.ncar_ids,
+            "car_imovel": self.car_imovel,
+            "created_at": self.created_at.strftime("%m/%d/%Y, %H:%M:%S"),
+            "image_date": self.image_date.strftime("%m/%d/%Y, %H:%M:%S")
+        }
+        
+        return feature
 
 class MaskTable(BaseModel):
     __tablename__ = maskTable
@@ -61,3 +88,4 @@ class MaskTable(BaseModel):
                        default=datetime.date.today(),
                        onupdate=datetime.date.today())
     image_date = Column(Date)
+
