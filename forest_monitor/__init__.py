@@ -5,7 +5,6 @@ from flask_cors import CORS
 
 from forest_monitor.blueprint import blueprint
 from forest_monitor.config import get_settings
-from forest_monitor.models.base_sql import db
 
 
 flask_bcrypt = Bcrypt()
@@ -17,9 +16,6 @@ def create_app(config):
     with app.app_context():
         app.config.from_object(config)
         app.register_blueprint(blueprint)
-
-        db.init_model(config.SQLALCHEMY_DATABASE_URI)
-
         flask_bcrypt.init_app(app)
 
     return app

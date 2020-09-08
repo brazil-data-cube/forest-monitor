@@ -3,7 +3,7 @@ from json import dumps as json_dumps
 from sqlalchemy import text
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import NotFound
-from forest_monitor.models.base_sql import db
+from forest_monitor.models.base_sql import getDatabase
 from forest_monitor.models.destination_table import DestinationTable
 from forest_monitor.config import getCurrentConfig
 
@@ -11,6 +11,7 @@ from forest_monitor.config import getCurrentConfig
 class FeatureBusiness:
     @classmethod
     def add(cls, values, user_id=None):
+
         """
         Add a feature to database
 
@@ -38,11 +39,16 @@ class FeatureBusiness:
 
 
         for coord in values['geom']['features'][0]['geometry']['coordinates']:
-            with db.session.begin_nested():
+            
+            try:
+                db = getDatabase()
+
+                connection = db.connect().execution_options(autocommit=True)
+
                 geom = feature
                 geom['coordinates'] = [coord]
 
-                statement = text('''
+                sql = text('''
                     WITH converted_geom as (
                         SELECT ST_setSRID(ST_GeomFromGeoJson(:geom), 4326) AS geom
                     ), result_''' + maskTableDeter + '''_intersection AS (
@@ -79,58 +85,133 @@ class FeatureBusiness:
                                 :path_row AS path_row, :view_date AS view_date, :sensor AS sensor,
                                 :satellite AS satellite, :areauckm AS areauckm,
                                 :uc AS uc, :areamunkm AS areamunkm, :municipali AS municipali,
-                                :uf AS uf, ST_Multi(geom), :scene_id AS scene_id, :source AS source,
+                                :uf AS uf, st_multi(st_collectionextract(st_makevalid(geom),3)), :scene_id AS scene_id, :source AS source,
                                 :user_id AS user_id, :created_at as created_at, :image_date AS image_date, :project AS project
                         FROM result
                 ''')
 
                 values['geom'] = json_dumps(geom)
-                db.session.execute(statement, params=values)
-            db.session.commit()
+                connection.execute(sql, geom=json_dumps(geom), classname=values['classname'], quadrant=values['quadrant'], path_row=values['path_row'], view_date=values['view_date'], sensor=values['sensor'], satellite=values['satellite'], areauckm=values['areauckm'], uc=values['uc'], areamunkm=values['areamunkm'], municipali=values['municipali'], uf=values['uf'], scene_id=values['scene_id'], source=values['source'], user_id=values['user_id'], created_at=values['created_at'], image_date=values['image_date'], project=values['project'])
 
-    
+            except Exception as err:
+
+                print("Original Exception Message: ", err)
+                raise Exception("Failed inserting Feature on Forest Monitor Database.")
+
+            finally:
+                connection.close()
+                db.dispose()
+
+
+            
+
     @classmethod
     def get(cls,feature_id):
-        with db.session.begin_nested():
-            try:
-                feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
-                
-                return feature
-            except NoResultFound:
-                raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
 
-        db.session.commit()
+        appConfig = getCurrentConfig()
+
+        destinationTable = appConfig.DESTINATION_TABLE
+
+        try:
+
+            db = getDatabase()
+            connection = db.connect()
+
+            sql = text('''select * from ''' + destinationTable +''' 
+            where id= :id and source= :source''')
+
+            features = connection.execute(sql, id=feature_id, source='M')
+
+            for row in features:
+                feature = {
+                    "id": row['id'],
+                    "classname": row['classname'],
+                    "quadrant": row['quadrant'],
+                    "path_row": row['path_row'],
+                    "view_date": row['view_date'].strftime("%m/%d/%Y, %H:%M:%S"),
+                    "sensor": row['sensor'],
+                    "satellite": row['satellite'],
+                    "areauckm": str(row['areauckm']),
+                    "uc": row['uc'],
+                    "areamunkm": str(row['areamunkm']),
+                    "municipali": row['municipali'],
+                    "uf": row['uf'],
+                    "scene_id": row['scene_id'],
+                    "source": row['source'],
+                    "user_id": row['user_id'],
+                    "ncar_ids": row['ncar_ids'],
+                    "car_imovel": row['car_imovel'],
+                    "created_at": row['created_at'].strftime("%m/%d/%Y, %H:%M:%S"),
+                    "image_date": row['image_date'].strftime("%m/%d/%Y, %H:%M:%S")
+                }
+                return feature
+
+        except Exception as err:
+
+            print("Original Exception Message: ", err)
+            raise Exception('Failed finding the requested Feature on Forest Monitor Database.')
+
+        finally:
+            connection.close()
+            db.dispose()
+                   
 
     @classmethod
     def update(cls, values, feature_id):
-        with db.session.begin_nested():
-               try:
 
-                feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
-                feature.classname=values["classname"]
-                feature.view_date=values["view_date"]
-                feature.path_row=values["path_row"]
-                feature.satellite=values["satellite"]
-                feature.sensor=values["sensor"]
-                feature.scene_id=values["scene_id"]
-                feature.image_date=values["image_date"]
+        appConfig = getCurrentConfig()
 
-               except NoResultFound:
-                raise NotFound('Feature "{}" not found or cannot be replacee.'.format(feature_id))
-        db.session.commit()              
+        destinationTable = appConfig.DESTINATION_TABLE
+
+        try:
+
+            db = getDatabase()
+            connection = db.connect()
+
+            sql = text('''update ''' + destinationTable +''' set 
+            classname= :classname,
+            view_date= :view_date,
+            path_row= :path_row,
+            satellite= :satellite,
+            sensor= :sensor,
+            scene_id= :scene_id,
+            image_date= :image_date
+            where id= :id ''')
+
+            connection.execute(sql, id=feature_id,classname=values["classname"], view_date=values["view_date"], path_row=values["path_row"], satellite=values["satellite"], sensor=values["sensor"], scene_id=values["scene_id"], image_date=values["image_date"])
+            
+
+        except Exception as err:
+            print("Original Exception Message: ", err)
+            db.rollback()
+            raise Exception('Failed updating the requested Feature on Forest Monitor Database.')
+
+        finally:
+            connection.close()
+            db.dispose()
 
     @classmethod
     def delete(cls, feature_id):
-        with db.session.begin_nested():
-             
-            try:
-                feature = db.session.query(DestinationTable).filter_by(id=feature_id, source='M').one()
-                print(feature)
-                db.session.delete(feature)
+        
+        appConfig = getCurrentConfig()
 
-            except NoResultFound:
-                raise NotFound('Feature "{}" not found or cannot be removed.'.format(feature_id))
+        destinationTable = appConfig.DESTINATION_TABLE
 
-        db.session.commit()
+        try:
 
-  
+            db = getDatabase()
+            connection = db.connect()
+
+            sql = text('delete from ' + destinationTable +' where id= :id and source= :source')
+
+            print(sql)
+            connection.execute(sql, id=feature_id, source='M')                        
+
+        except Exception as err:
+            print("Original Exception Message: ", err)
+            raise Exception('Failed deleting the requested Feature on Forest Monitor Database.')
+        
+        finally:
+            connection.close()
+            db.dispose()
+

@@ -28,8 +28,7 @@ class FeatureCreationController(APIResource):
 class FeatureGetController(APIResource):
     @require_oauth_scopes(scope="{}:manage:POST".format(APPNAME))
     def get(self, feature_id):
-        destinationTable = FeatureBusiness.get(feature_id)
-        feature = destinationTable.getFeature()
+        feature = FeatureBusiness.get(feature_id)
         response = json.dumps(feature, indent=2)
         
         return response
