@@ -4,7 +4,7 @@
     "type":"stac"
   },
   "KEPLER_STAC": {
-    "url": "https://stac.amskepler.com/v07",
+    "url": "https://stac.amskepler.com/v10",
     "type":"stac"
   }
 }
