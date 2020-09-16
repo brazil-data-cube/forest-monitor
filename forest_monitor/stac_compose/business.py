@@ -86,7 +86,7 @@ class StacComposeBusiness():
 
         result_features = []
         for collection in collections.split(','):
-            if 'cbers' in collection:
+            if 'CBERS' in collection:
                 result_features += cls.search_kepler_stac(cls.get_providers()['KEPLER_STAC'],
                                                 collection, bbox, time)
 
