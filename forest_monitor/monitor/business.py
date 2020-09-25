@@ -52,15 +52,15 @@ class FeatureBusiness:
                     WITH converted_geom as (
                         SELECT ST_setSRID(ST_GeomFromGeoJson(:geom), 4326) AS geom
                     ), result_''' + maskTableDeter + '''_intersection AS (
-                        SELECT ST_Union(''' + maskTableDeter + '''.geom) AS geom
+                        SELECT ST_Union(st_makevalid(''' + maskTableDeter + '''.geom)) AS geom
                         FROM ''' + maskTableDeter + ''', converted_geom
                         WHERE ST_Intersects(''' + maskTableDeter + '''.geom, converted_geom.geom) AND ''' + maskTableDeter + '''.source <> 'S' 
                     ), result_''' + destinationTable + '''_intersection AS (
-                        SELECT ST_Union(''' + destinationTable + '''.geom) AS geom
+                        SELECT ST_Union(st_makevalid(''' + destinationTable + '''.geom)) AS geom
                         FROM ''' + destinationTable + ''', converted_geom
                         WHERE ST_Intersects(''' + destinationTable + '''.geom, converted_geom.geom) AND ''' + destinationTable + '''.source <> 'S' 
                     ), result_mask_intersection AS (
-                        SELECT ST_Union(mask.geom) AS geom
+                        SELECT ST_Union(st_makevalid(mask.geom)) AS geom
                         FROM ''' + maskTableProdes + ''' AS mask, converted_geom
                         WHERE ST_Intersects(mask.geom, converted_geom.geom)
                     ), result_collect AS (
@@ -91,6 +91,11 @@ class FeatureBusiness:
                 ''')
 
                 values['geom'] = json_dumps(geom)
+
+                print("Values: ", values)
+
+                print("SQL: ", sql)
+
                 connection.execute(sql, geom=json_dumps(geom), classname=values['classname'], quadrant=values['quadrant'], path_row=values['path_row'], view_date=values['view_date'], sensor=values['sensor'], satellite=values['satellite'], areauckm=values['areauckm'], uc=values['uc'], areamunkm=values['areamunkm'], municipali=values['municipali'], uf=values['uf'], scene_id=values['scene_id'], source=values['source'], user_id=values['user_id'], created_at=values['created_at'], image_date=values['image_date'], project=values['project'])
 
             except Exception as err:
