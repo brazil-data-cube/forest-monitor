@@ -79,14 +79,17 @@ class FeatureBusiness:
                         FROM converted_geom, result_collect r
                     )
                     INSERT INTO ''' + destinationTable + ''' (classname, quadrant, path_row, view_date, sensor,
-                                    satellite, areauckm, uc, areamunkm, municipali,
-                                    uf, geom, scene_id, source, user_id, created_at, image_date, project)
+                                    satellite, areauckm, uc, municipali,
+                                    uf, geom, scene_id, source, user_id, created_at, image_date, centroid_x, centroid_y, areamunkm, areatotalk, project)
                         SELECT :classname AS classname, :quadrant AS quadrant,
                                 :path_row AS path_row, :view_date AS view_date, :sensor AS sensor,
                                 :satellite AS satellite, :areauckm AS areauckm,
-                                :uc AS uc, :areamunkm AS areamunkm, :municipali AS municipali,
+                                :uc AS uc, :municipali AS municipali,
                                 :uf AS uf, st_multi(st_collectionextract(st_makevalid(geom),3)), :scene_id AS scene_id, :source AS source,
-                                :user_id AS user_id, :created_at as created_at, :image_date AS image_date, :project AS project
+                                :user_id AS user_id, :created_at as created_at, :image_date AS image_date, 
+                                ST_X(ST_PointOnSurface(geom)) as centroid_x, ST_Y(ST_PointOnSurface(geom)) as centroid_y,
+                                (st_area(geom::geography)/1000000) as areamunkm, (st_area(geom::geography)/1000000) as areatotalk,
+                                :project AS project
                         FROM result
                 ''')
 
