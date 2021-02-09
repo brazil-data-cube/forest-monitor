@@ -7,7 +7,7 @@ Flask-RESTful==0.3.6
 Flask-Script==2.0.6
 pytz==2017.3
 six==1.11.0
-Werkzeug==0.15.3
+Werkzeug==0.16.1
 coverage==4.4.2
 requests==2.20.0
 marshmallow==2.15.1
