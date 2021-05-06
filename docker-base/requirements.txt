@@ -1,7 +1,7 @@
 Flask==1.0.3
 flask_bcrypt==0.7.1
 flask_restplus==0.12.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 Flask-JWT==0.3.2
 Flask-RESTful==0.3.6
 Flask-Script==2.0.6
