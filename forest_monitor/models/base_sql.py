@@ -1,10 +1,10 @@
 # pylint: disable=E0239
 
-from datetime import datetime
-from sqlalchemy import create_engine, Column, DateTime, MetaData
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+
 from forest_monitor.config import getCurrentConfig
+
 
 def getDatabase():
     database = create_engine(getCurrentConfig().SQLALCHEMY_DATABASE_URI)

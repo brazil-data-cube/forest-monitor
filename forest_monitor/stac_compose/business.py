@@ -1,9 +1,8 @@
 import json
-import os
-from pprint import pprint
-from forest_monitor.config import BASE_DIR
 
+from forest_monitor.config import BASE_DIR
 from forest_monitor.stac_compose.services import StacComposeServices
+
 
 class StacComposeBusiness():
 

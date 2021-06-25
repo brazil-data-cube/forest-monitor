@@ -1,5 +1,6 @@
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Integer, Numeric, String, Date
+
 from forest_monitor.models import BaseModel
 
 

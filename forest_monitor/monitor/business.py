@@ -1,11 +1,10 @@
 import datetime
 from json import dumps as json_dumps
+
 from sqlalchemy import text
-from sqlalchemy.orm.exc import NoResultFound
-from werkzeug.exceptions import NotFound
-from forest_monitor.models.base_sql import getDatabase
-from forest_monitor.models.destination_table import DestinationTable
+
 from forest_monitor.config import getCurrentConfig
+from forest_monitor.models.base_sql import getDatabase
 
 
 class FeatureBusiness:
@@ -165,10 +164,11 @@ class FeatureBusiness:
 
         try:
 
+
             db = getDatabase()
             connection = db.connect()
 
-            sql = text('''update ''' + destinationTable +''' set 
+            sql = text('''update ''' + destinationTable + ''' set 
             classname= :classname,
             view_date= :view_date,
             path_row= :path_row,
@@ -180,6 +180,40 @@ class FeatureBusiness:
 
             connection.execute(sql, id=feature_id,classname=values["classname"], view_date=values["view_date"], path_row=values["path_row"], satellite=values["satellite"], sensor=values["sensor"], scene_id=values["scene_id"], image_date=values["image_date"])
             
+
+        except Exception as err:
+            print("Original Exception Message: ", err)
+            db.rollback()
+            raise Exception('Failed updating the requested Feature on Forest Monitor Database.')
+
+        finally:
+            connection.close()
+            db.dispose()
+
+    @classmethod
+    def updateGeom(cls, values, feature_id):
+
+        appConfig = getCurrentConfig()
+
+        destinationTable = appConfig.DESTINATION_TABLE
+
+        try:
+
+            feature = {
+                'coordinates': [values['edited_geom']['features'][0]['geometry']['coordinates']],
+                'type': 'MultiPolygon'
+            }
+            db = getDatabase()
+            connection = db.connect()
+
+            values['edited_geom'] = json_dumps(feature)
+
+            sql = text('''update ''' + destinationTable + ''' set 
+            geom= ST_setSRID(ST_GeomFromGeoJson(:geom), 4326)
+            where id= :id ''')
+
+            connection.execute(sql, id=feature_id, geom=values["edited_geom"])
+
 
         except Exception as err:
             print("Original Exception Message: ", err)

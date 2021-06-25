@@ -1,6 +1,7 @@
-from cerberus import Validator
 from datetime import datetime
 from json import JSONEncoder
+
+from cerberus import Validator
 
 
 def validate_date(s):

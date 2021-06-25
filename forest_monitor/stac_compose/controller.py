@@ -1,12 +1,12 @@
-import os, json
+import json
+
+from bdc_core.utils.flask import APIResource
 from flask import request
-from werkzeug.exceptions import InternalServerError, BadRequest
-from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.exceptions import BadRequest
 
 from forest_monitor.stac_compose import ns
 from forest_monitor.stac_compose.business import StacComposeBusiness
 from forest_monitor.stac_compose.parsers import validate
-from bdc_core.utils.flask import APIResource
 
 api = ns
 

@@ -1,11 +1,11 @@
 import os
+
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
 from forest_monitor.blueprint import blueprint
 from forest_monitor.config import get_settings
-
 
 flask_bcrypt = Bcrypt()
 

@@ -1,9 +1,11 @@
 import datetime
+
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Date, Integer, Numeric, String, Text
-from forest_monitor.models import BaseModel, getDatabase
-from forest_monitor.config import getCurrentConfig
 from sqlalchemy.orm import sessionmaker
+
+from forest_monitor.config import getCurrentConfig
+from forest_monitor.models import BaseModel, getDatabase
 
 appConfig = getCurrentConfig()
 
