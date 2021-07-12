@@ -1,10 +1,14 @@
 {
   "DEVELOPMENT_SEED_STAC": {
-    "url": "https://sat-api.developmentseed.org",
+    "url": "https://sat-api-dev.developmentseed.org",
     "type":"stac"
   },
   "KEPLER_STAC": {
     "url": "https://stac.amskepler.com/v10",
+    "type":"stac"
+  },
+  "ELEMENT84": {
+    "url": "https://earth-search.aws.element84.com/v0",
     "type":"stac"
   }
 }

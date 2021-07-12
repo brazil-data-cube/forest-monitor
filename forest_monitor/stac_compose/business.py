@@ -77,11 +77,56 @@ class StacComposeBusiness():
                 listL4.append(i)
      
         return listL4
-        
-       
 
     @classmethod
-    def search(cls, collections, bbox, cloud_cover=False, time=False, limit=100):
+    def search_element84(cls, url, collection, bbox, cloud_cover=False, time=False, limit=100):
+        # data = {
+        #     'bbox': bbox.split(','),
+        #     'query': {
+        #         'collection': { 'eq': collection }
+        #     }
+        # }
+
+        data = {
+            'collections': [collection],
+            'intersects': {
+                "type": "Polygon",
+                "coordinates": json.loads(bbox)
+            }
+        }
+
+        # if cloud_cover:
+        # cloud cover
+        # data['query']['eo:cloud_cover'] = { "lt": cloud_cover }
+        if time:
+            # range temporal
+            data['datetime'] = time
+        if limit:
+            # limit
+            data['limit'] = limit if int(limit) <= 1000 else 1000
+
+        response = StacComposeServices.search_items_post_element84(url, data)
+        if not response:
+            return []
+
+        result_features = []
+        # get all features
+        if int(limit) <= 1000 or int(response['meta']['found']) <= 1000:
+            result_features += response['features']
+
+        # get 1000 features at a time
+        else:
+            qnt_all_features = response['meta']['found']
+            for x in range(0, int(qnt_all_features/1000)+1):
+                data['page'] = x+1
+                response_by_page = StacComposeServices.search_items_post_element84(url, data)
+                if response_by_page:
+                    result_features += response_by_page['features']
+
+        return result_features
+
+    @classmethod
+    def search(cls, collections, bbox, polygon, cloud_cover=False, time=False, limit=100):
 
         result_features = []
         for collection in collections.split(','):
@@ -89,7 +134,11 @@ class StacComposeBusiness():
                 result_features += cls.search_kepler_stac(cls.get_providers()['KEPLER_STAC'],
                                                 collection, bbox, time)
 
-            else:
-                result_features += cls.search_development_seed(cls.get_providers()['DEVELOPMENT_SEED_STAC'],
-                                                collection, bbox, cloud_cover, time, limit)
+            elif 'sentinel' in collection:
+                result_features += cls.search_element84(cls.get_providers()['ELEMENT84'],
+                                                collection, polygon, cloud_cover, time, limit)
+
+            elif 'landsat' in collection:
+                result_features += cls.search_element84(cls.get_providers()['ELEMENT84'],
+                                                        collection, polygon, cloud_cover, time, limit)
         return result_features
