@@ -10,13 +10,13 @@ def getDatabase():
     database = create_engine(getCurrentConfig().SQLALCHEMY_DATABASE_URI)
     return database
 
+
 class DBO():
     def save(self, commit=True):
         """
         Save and persists object in database
         """
-        
-                
+
         try:
 
             db = getDatabase()
@@ -27,14 +27,12 @@ class DBO():
             raise e
         finally:
             db.dispose()
-    
 
     def delete(self):
-                
+
         """
         Delete object from database.
         """
-
 
         try:
             db = getDatabase()
@@ -46,16 +44,11 @@ class DBO():
         finally:
             db.dispose()
 
-    
     def get(self):
-        
-        
 
         """
         Delete object from database.
         """
-
-     
 
         try:
             db = getDatabase()
@@ -68,26 +61,22 @@ class DBO():
         finally:
             db.dispose()
 
-    
-    def put(self,data):
-        
-        
+    def put(self, data):
+
         """
         Delete object from database.
         """
 
-      
         try:
 
             db = getDatabase()
             connection = db.connect()
-            
-            connection.put(self,data)
+
+            connection.put(self, data)
         except Exception as e:
             raise e
         finally:
             db.dispose()
-
 
 
 class BaseModel(declarative_base(metadata=MetaData()), DBO):
@@ -105,6 +94,3 @@ class BaseModel(declarative_base(metadata=MetaData()), DBO):
         for key, value in data.items():
             print(key)
             setattr(self, key, value)
-
-
-            

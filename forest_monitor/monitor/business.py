@@ -36,9 +36,8 @@ class FeatureBusiness:
             'type': values['geom']['features'][0]['geometry']['type']
         }
 
-
         for coord in values['geom']['features'][0]['geometry']['coordinates']:
-            
+
             try:
                 db = getDatabase()
 
@@ -90,7 +89,14 @@ class FeatureBusiness:
                 ''')
 
                 values['geom'] = json_dumps(geom)
-                connection.execute(sql, geom=json_dumps(geom), classname=values['classname'], quadrant=values['quadrant'], path_row=values['path_row'], view_date=values['view_date'], sensor=values['sensor'], satellite=values['satellite'], areauckm=values['areauckm'], uc=values['uc'], areamunkm=values['areamunkm'], municipali=values['municipali'], uf=values['uf'], scene_id=values['scene_id'], source=values['source'], user_id=values['user_id'], created_at=values['created_at'], image_date=values['image_date'], project=values['project'])
+                connection.execute(sql, geom=json_dumps(geom), classname=values['classname'],
+                                   quadrant=values['quadrant'], path_row=values['path_row'],
+                                   view_date=values['view_date'], sensor=values['sensor'],
+                                   satellite=values['satellite'], areauckm=values['areauckm'], uc=values['uc'],
+                                   areamunkm=values['areamunkm'], municipali=values['municipali'], uf=values['uf'],
+                                   scene_id=values['scene_id'], source=values['source'], user_id=values['user_id'],
+                                   created_at=values['created_at'], image_date=values['image_date'],
+                                   project=values['project'])
 
             except Exception as err:
 
@@ -101,11 +107,8 @@ class FeatureBusiness:
                 connection.close()
                 db.dispose()
 
-
-            
-
     @classmethod
-    def get(cls,feature_id):
+    def get(cls, feature_id):
 
         appConfig = getCurrentConfig()
 
@@ -116,7 +119,7 @@ class FeatureBusiness:
             db = getDatabase()
             connection = db.connect()
 
-            sql = text('''select * from ''' + destinationTable +''' 
+            sql = text('''select * from ''' + destinationTable + ''' 
             where id= :id and source= :source''')
 
             features = connection.execute(sql, id=feature_id, source='M')
@@ -153,7 +156,6 @@ class FeatureBusiness:
         finally:
             connection.close()
             db.dispose()
-                   
 
     @classmethod
     def update(cls, values, feature_id):
@@ -163,7 +165,6 @@ class FeatureBusiness:
         destinationTable = appConfig.DESTINATION_TABLE
 
         try:
-
 
             db = getDatabase()
             connection = db.connect()
@@ -178,8 +179,10 @@ class FeatureBusiness:
             image_date= :image_date
             where id= :id ''')
 
-            connection.execute(sql, id=feature_id,classname=values["classname"], view_date=values["view_date"], path_row=values["path_row"], satellite=values["satellite"], sensor=values["sensor"], scene_id=values["scene_id"], image_date=values["image_date"])
-            
+            connection.execute(sql, id=feature_id, classname=values["classname"], view_date=values["view_date"],
+                               path_row=values["path_row"], satellite=values["satellite"], sensor=values["sensor"],
+                               scene_id=values["scene_id"], image_date=values["image_date"])
+
 
         except Exception as err:
             print("Original Exception Message: ", err)
@@ -217,7 +220,6 @@ class FeatureBusiness:
 
         except Exception as err:
             print("Original Exception Message: ", err)
-            db.rollback()
             raise Exception('Failed updating the requested Feature on Forest Monitor Database.')
 
         finally:
@@ -226,7 +228,7 @@ class FeatureBusiness:
 
     @classmethod
     def delete(cls, feature_id):
-        
+
         appConfig = getCurrentConfig()
 
         destinationTable = appConfig.DESTINATION_TABLE
@@ -236,16 +238,15 @@ class FeatureBusiness:
             db = getDatabase()
             connection = db.connect()
 
-            sql = text('delete from ' + destinationTable +' where id= :id and source= :source')
+            sql = text('delete from ' + destinationTable + ' where id= :id and source= :source')
 
             print(sql)
-            connection.execute(sql, id=feature_id, source='M')                        
+            connection.execute(sql, id=feature_id, source='M')
 
         except Exception as err:
             print("Original Exception Message: ", err)
             raise Exception('Failed deleting the requested Feature on Forest Monitor Database.')
-        
+
         finally:
             connection.close()
             db.dispose()
-

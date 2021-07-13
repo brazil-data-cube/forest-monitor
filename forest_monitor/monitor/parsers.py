@@ -11,6 +11,7 @@ def login():
         'password': {"type": "string", "empty": False, "required": True}
     }
 
+
 def validate(data, type_schema):
     schema = eval('{}()'.format(type_schema))
 

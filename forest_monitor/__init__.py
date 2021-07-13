@@ -20,6 +20,7 @@ def create_app(config):
 
     return app
 
+
 app = create_app(get_settings(os.environ.get('ENVIRONMENT', 'DevelopmentConfig')))
 
 CORS(app, resorces={r'/d/*': {"origins": '*'}})

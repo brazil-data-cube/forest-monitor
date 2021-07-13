@@ -3,13 +3,15 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 APPNAME = os.environ.get('CLIENT_AUDIENCE', '')
 
+
 def get_settings(env):
     return CONFIG.get(env)
+
 
 def getCurrentConfig():
     config = get_settings(os.environ.get('ENVIRONMENT', 'DevelopmentConfig'))
     return config
-    
+
 
 class Config():
     DEBUG = False
@@ -20,7 +22,7 @@ class Config():
     MASK_TABLE_DETER = os.environ.get('MASK_TABLE_DETER')
     MASK_TABLE_PRODES = os.environ.get('MASK_TABLE_PRODES')
     DESTINATION_TABLE = os.environ.get('DESTINATION_TABLE')
-  
+
 
 class ProductionConfig(Config):
     """Production Mode"""
@@ -43,4 +45,3 @@ CONFIG = {
     "ProductionConfig": ProductionConfig(),
     "TestingConfig": TestingConfig()
 }
-

@@ -11,22 +11,27 @@ def validate_date(s):
             return None
     return s
 
+
 def validate_collections(collections):
     for c in collections.split(','):
         if c not in ["CBERS4-MUX", "CBERS4-AWFI", "sentinel-s2-l2a-cogs", "landsat-8-l1-c1"]:
             return None
     return collections.split(',')
 
+
 def validate_bbox(box):
     list_bbox = box.split(',')
     coordinates = [float(b) for b in list_bbox]
     return coordinates if len(coordinates) == 4 else None
 
+
 def validate_cloud(cloud):
-    return float(cloud) if float(cloud) > 0 and float(cloud) <= 100 else None
+    return float(cloud) if 0 < float(cloud) <= 100 else None
+
 
 def validate_limit(limit):
     return int(limit) if float(limit) > 0 else None
+
 
 def search():
     base = {
@@ -39,6 +44,7 @@ def search():
     }
     return base
 
+
 def validate(data, type_schema):
     schema = eval('{}()'.format(type_schema))
 
@@ -46,6 +52,7 @@ def validate(data, type_schema):
     if not v.validate(data):
         return v.errors, False
     return data, True
+
 
 class JSONEnc(JSONEncoder):
     def default(self, o):

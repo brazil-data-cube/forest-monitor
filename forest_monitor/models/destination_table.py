@@ -46,6 +46,7 @@ class DestinationTable(BaseModel):
     car_duplo = Column(Integer)
     project = Column(Text())
 
+
 class MaskTable(BaseModel):
     __tablename__ = maskTable
     id = Column(Integer, primary_key=True)

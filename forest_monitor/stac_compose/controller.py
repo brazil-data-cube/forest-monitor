@@ -10,6 +10,7 @@ from forest_monitor.stac_compose.parsers import validate
 
 api = ns
 
+
 @api.route('/search')
 class CollectionsController(APIResource):
 
