@@ -17,63 +17,25 @@ class StacComposeBusiness():
         return providers
 
     @classmethod
-    def search_development_seed(cls, url, collection, bbox, cloud_cover=False, time=False, limit=100):
-        data = {
-            'bbox': bbox.split(','),
-            'query': {
-                'collection': {'eq': collection}
-            }
-        }
-
-        if cloud_cover:
-            # cloud cover
-            data['query']['eo:cloud_cover'] = {"lt": cloud_cover}
-        if time:
-            # range temporal
-            data['time'] = time
-        if limit:
-            # limit
-            data['limit'] = limit if int(limit) <= 1000 else 1000
-
-        response = StacComposeServices.search_items_post(url, data)
-        if not response:
-            return []
-
-        result_features = []
-        # get all features
-        if int(limit) <= 1000 or int(response['meta']['found']) <= 1000:
-            result_features += response['features']
-
-        # get 1000 features at a time
-        else:
-            qnt_all_features = response['meta']['found']
-            for x in range(0, int(qnt_all_features / 1000) + 1):
-                data['page'] = x + 1
-                response_by_page = StacComposeServices.search_items_post(url, data)
-                if response_by_page:
-                    result_features += response_by_page['features']
-
-        return result_features
-
-    @classmethod
     def search_kepler_stac(cls, url, collection, bbox, time=False):
-        query = 'bbox={}'.format(bbox)
-        query += '&limit={}'.format(300)
+        params = {
+            'bbox': bbox,
+            'limit': 100,
+            'collections': [collection.upper()]
+        }
         if time:
-            # range temporal
-            query += '&time={}'.format(time)
+            params['datetime'] = time
 
-        response = StacComposeServices.search_items(url, collection.upper(), query)
+        response = StacComposeServices.search_items(url, params)
         if not response:
             return []
-        # retornar somente parametros L4    
+        # retornar somente parametros L4
         features = response['features'] if response.get('features') else [response]
         listL4 = []
-        padrao = "L4"
+        pattern = "L4"
         for i in features:
 
-            if i.get('id') and padrao in i['id']:
-                # print(i['id'])
+            if i.get('id') and pattern in i['id']:
                 listL4.append(i)
 
         return listL4

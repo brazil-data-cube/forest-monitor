@@ -14,7 +14,7 @@ def validate_date(s):
 
 def validate_collections(collections):
     for c in collections.split(','):
-        if c not in ["CBERS4-MUX", "CBERS4-AWFI", "sentinel-s2-l2a-cogs", "landsat-8-l1-c1"]:
+        if c not in ["CBERS4A-MUX", "CBERS4A-AWFI", "CBERS4-MUX", "CBERS4-AWFI", "sentinel-s2-l2a-cogs", "landsat-8-l1-c1"]:
             return None
     return collections.split(',')
 
@@ -37,7 +37,7 @@ def search():
     base = {
         'collections': {"type": "list", "coerce": validate_collections, "empty": False, "required": True},
         'bbox': {"type": "list", "coerce": validate_bbox, "empty": False, "required": True},
-        'polygon': {"type": "string", "empty": False, "required": True},
+        'polygon': {"type": "string", "empty": True, "required": False},
         'cloud_cover': {"type": "number", "coerce": validate_cloud, "empty": True, "required": False},
         'time': {"type": "string", "coerce": validate_date, "empty": True, "required": False},
         'limit': {"type": "number", "coerce": validate_limit, "empty": True, "required": False}

@@ -3,12 +3,11 @@ import json
 import requests
 
 
-class StacComposeServices():
+class StacComposeServices:
 
     @classmethod
-    def search_items(cls, url, collection_id, query):
-        base_url = '{}/collections/{}/items?{}'.format(url, collection_id, query)
-        r = requests.get(base_url, headers={})
+    def search_items(cls, url, query):
+        r = requests.get(url + '/search', params=query)
         if r and r.status_code in (200, 201):
             return json.loads(r.text)
         return None
@@ -27,7 +26,8 @@ class StacComposeServices():
     def search_items_post_element84(cls, url, data):
         base_url = '{}/search'.format(url)
         r = requests.post(base_url, headers={
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/geo+json'
         }, data=json.dumps(data))
         if r and r.status_code in (200, 201):
             return json.loads(r.text)
