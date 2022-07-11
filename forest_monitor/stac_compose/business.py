@@ -79,6 +79,49 @@ class StacComposeBusiness():
         return result_features
 
     @classmethod
+    def search_usgs(cls, url, collection, bbox, time=False, limit=100):
+
+        data = {
+            'collections': [collection],
+            'intersects': {
+                "type": "Polygon",
+                "coordinates": json.loads(bbox)
+            },
+            # 'properties': {
+            #     "platform": "LANDSAT_8"
+            # }
+        }
+
+        if time:
+            # range temporal
+            data['datetime'] = time
+        if limit:
+            # limit
+            data['limit'] = limit if int(limit) <= 100 else 100
+
+        response = StacComposeServices.search_items_post_usgs(url, data)
+        #print(bbox + " \n")
+
+        if not response:
+            return []
+
+        result_features = []
+        # get all features
+        if int(limit) <= 100 or int(response['meta']['found']) <= 100:
+            result_features += response['features']
+
+        # get 1000 features at a time
+        else:
+            qnt_all_features = response['meta']['found']
+            for x in range(0, int(qnt_all_features / 100) + 1):
+                data['page'] = x + 1
+                response_by_page = StacComposeServices.search_items_post_usgs(url, data)
+                if response_by_page:
+                    result_features += response_by_page['features']
+        
+        return result_features
+    
+    @classmethod
     def search(cls, collections, bbox, polygon, time=False, limit=100):
 
         result_features = []
@@ -91,7 +134,12 @@ class StacComposeBusiness():
                 result_features += cls.search_element84(cls.get_providers()['ELEMENT84'],
                                                         collection, polygon, time, limit)
 
-            elif 'landsat' in collection:
-                result_features += cls.search_element84(cls.get_providers()['ELEMENT84'],
+            # elif 'landsat' in collection:
+            #     result_features += cls.search_element84(cls.get_providers()['ELEMENT84'],
+            #                                             collection, polygon, time, limit)
+
+            elif 'landsat-c2l2-sr' in collection:
+                result_features += cls.search_usgs(cls.get_providers()['USGS'],
                                                         collection, polygon, time, limit)
+
         return result_features

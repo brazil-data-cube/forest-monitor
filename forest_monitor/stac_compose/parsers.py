@@ -14,7 +14,7 @@ def validate_date(s):
 
 def validate_collections(collections):
     for c in collections.split(','):
-        if c not in ["CBERS4A-MUX", "CBERS4A-AWFI", "CBERS4-MUX", "CBERS4-AWFI", "sentinel-s2-l2a-cogs", "landsat-8-l1-c1"]:
+        if c not in ["CBERS4A-MUX", "CBERS4A-AWFI", "CBERS4-MUX", "CBERS4-AWFI", "sentinel-s2-l2a-cogs", "landsat-c2l2-sr"]: # "landsat-8-l1-c1"
             return None
     return collections.split(',')
 

@@ -6,5 +6,9 @@
   "ELEMENT84": {
     "url": "https://earth-search.aws.element84.com/v0",
     "type": "stac"
+  },  
+  "USGS": {
+    "url": "https://landsatlook.usgs.gov/stac-server",
+    "type": "stac"
   }
 }
